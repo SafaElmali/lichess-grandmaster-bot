@@ -1,0 +1,15 @@
+{
+  "name": "lichess-grandmaster-bot",
+  "version": "1.0.0",
+  "description": "Chess bot that plays on Lichess using Stockfish",
+  "type": "module",
+  "scripts": {
+    "start": "node bot.js",
+    "play": "node bot.js"
+  },
+  "dependencies": {
+    "chess.js": "^1.0.0-beta.8",
+    "dotenv": "^17.2.3",
+    "playwright": "^1.40.0"
+  }
+}
