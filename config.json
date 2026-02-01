@@ -1,10 +1,31 @@
 {
   "game": {
     "timeControl": "5+0",
-    "autoQueue": true
+    "mode": "quickplay",
+    "maxGames": 0
   },
   "engine": {
-    "depth": 15,
-    "moveDelayMs": 500
+    "depth": 15
+  },
+  "openingBook": {
+    "enabled": true,
+    "maxMoves": 10
+  },
+  "antiDetection": {
+    "enabled": true,
+    "moveDelay": {
+      "baseMs": 500,
+      "variance": 0.4
+    },
+    "thinkingPauses": true,
+    "humanMouse": true
+  },
+  "tournament": {
+    "enabled": false,
+    "url": null,
+    "autoBerserk": false
+  },
+  "telegram": {
+    "enabled": true
   }
 }
