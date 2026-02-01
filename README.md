@@ -1,5 +1,11 @@
 # Lichess Grandmaster Bot
 
+> **⚠️ WARNING: This project is for educational purposes only.**
+>
+> Using automated bots to play on Lichess violates their [Terms of Service](https://lichess.org/terms-of-service). Your account **will be banned** if detected. Lichess has sophisticated cheat detection systems.
+>
+> **Do NOT use this on your personal account.** The developers are not responsible for any account bans or other consequences.
+
 Automated chess bot that plays on Lichess using Stockfish with opening book, anti-detection, tournament mode, and Telegram notifications.
 
 ## Features
