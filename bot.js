@@ -108,56 +108,57 @@ class LichessController {
     return success;
   }
 
-  async startGame(gameType = 'blitz') {
-    console.log(`[Game] Starting ${gameType} game...`);
+  async startGame(timeControl = '5+0') {
+    console.log(`[Game] Starting ${timeControl} game...`);
     await this.page.goto('https://lichess.org');
-    await this.sleep(1000);
+    await this.sleep(2000);
 
-    // Click on the game type button (blitz, rapid, etc.)
-    const selectors = {
-      bullet: 'button[data-id="1+0"], .lobby__app button:has-text("1+0")',
-      blitz: 'button[data-id="3+0"], button[data-id="5+0"], .lobby__app button:has-text("3+0")',
-      rapid: 'button[data-id="10+0"], .lobby__app button:has-text("10+0")'
-    };
+    // Click on the quick pairing button (right side grid)
+    const clicked = await this.page.evaluate((timeControl) => {
+      // Method 1: Look for links/buttons with the time control text
+      const allElements = document.querySelectorAll('a, button, div[class*="hook"], [class*="quick"] > *');
 
-    // Try to find and click a quick pairing button
-    const clicked = await this.page.evaluate((gameType) => {
-      // Look for quick pairing buttons in the lobby
-      const buttons = document.querySelectorAll('.lobby__app .lobby__start button');
-
-      for (const btn of buttons) {
-        const text = btn.textContent?.toLowerCase() || '';
-        if (gameType === 'blitz' && (text.includes('3+0') || text.includes('5+0') || text.includes('3+2'))) {
-          btn.click();
-          return true;
-        }
-        if (gameType === 'bullet' && (text.includes('1+0') || text.includes('2+1'))) {
-          btn.click();
-          return true;
-        }
-        if (gameType === 'rapid' && (text.includes('10+0') || text.includes('15+10'))) {
-          btn.click();
-          return true;
+      for (const el of allElements) {
+        const text = el.textContent?.trim() || '';
+        // Match "5+0" at the start of text (before "Blitz" etc)
+        if (text.startsWith(timeControl)) {
+          el.click();
+          return { success: true, method: 'text match' };
         }
       }
 
-      // Fallback: try the quick pairing section
-      const quickPair = document.querySelector(`[data-id*="${gameType}"], .quick-pairing button`);
-      if (quickPair) {
-        quickPair.click();
-        return true;
+      // Method 2: Look specifically in the lobby area
+      const lobbyLinks = document.querySelectorAll('.lobby__app a, .lpools a, [data-pool] a');
+      for (const el of lobbyLinks) {
+        if (el.textContent?.includes(timeControl)) {
+          el.click();
+          return { success: true, method: 'lobby link' };
+        }
       }
 
-      return false;
-    }, gameType);
+      // Method 3: Find by data attribute or pool
+      const poolBtn = document.querySelector(`[data-id="${timeControl}"], [data-pool="${timeControl}"]`);
+      if (poolBtn) {
+        poolBtn.click();
+        return { success: true, method: 'data attr' };
+      }
 
-    if (!clicked) {
-      console.log('[Game] Could not find quick pairing button, trying alternative...');
-      // Try clicking any visible play button
-      await this.page.click('.lobby__start button >> nth=0').catch(() => {});
+      // Debug: list what we found
+      const found = [];
+      document.querySelectorAll('a, button').forEach(el => {
+        const text = el.textContent?.trim().substring(0, 20);
+        if (text && text.match(/\d\+\d/)) found.push(text);
+      });
+
+      return { success: false, found: found.slice(0, 10) };
+    }, timeControl);
+
+    if (clicked.success) {
+      console.log(`[Game] Clicked ${timeControl} (${clicked.method}) - waiting for opponent...`);
+    } else {
+      console.log('[Game] Could not find quick pairing button');
+      console.log('[Debug] Found elements:', clicked.found);
     }
-
-    console.log('[Game] Waiting for game to start...');
   }
 
   async waitForGameStart(timeout = 60000) {
@@ -338,7 +339,7 @@ class LichessBot {
     while (true) {
       try {
         // Start a new game
-        await this.controller.startGame(config.game.type);
+        await this.controller.startGame(config.game.timeControl);
 
         // Wait for game to start
         const gameStarted = await this.controller.waitForGameStart();

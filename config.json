@@ -1,10 +1,10 @@
 {
   "game": {
-    "type": "blitz",
+    "timeControl": "5+0",
     "autoQueue": true
   },
   "engine": {
     "depth": 15,
-    "moveDelayMs": 300
+    "moveDelayMs": 500
   }
 }

@@ -11,17 +11,18 @@ npx playwright install chromium
 brew install stockfish  # macOS
 ```
 
-2. Copy `.env.example` to `.env` and add your credentials:
+2. Run the setup wizard:
 ```bash
-cp .env.example .env
+npm run setup
 ```
 
+3. Add your Lichess credentials to `.env`:
 ```env
 LICHESS_USERNAME=your_username
 LICHESS_PASSWORD=your_password
 ```
 
-3. Run the bot:
+4. Run the bot:
 ```bash
 npm start
 ```
@@ -33,12 +34,12 @@ Edit `config.json` to customize:
 ```json
 {
   "game": {
-    "type": "blitz",      // bullet, blitz, or rapid
+    "timeControl": "5+0",  // 1+0, 2+1, 3+0, 5+0, 10+0, 15+10
     "autoQueue": true
   },
   "engine": {
-    "depth": 15,          // higher = stronger, slower
-    "moveDelayMs": 300    // delay before each move
+    "depth": 15,           // higher = stronger, slower
+    "moveDelayMs": 300     // delay before each move
   }
 }
 ```
